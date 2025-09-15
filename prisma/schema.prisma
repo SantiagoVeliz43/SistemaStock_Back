@@ -15,18 +15,12 @@ enum Role {
   ADMIN
 }
 
-enum Especiliad {
-  CLINICO
-  CIRUJANO
-  PEDIATRA
-  PSQUIATRA
-}
 
-model Medico {
-  cedula   Int    @id
+
+model medico{
+  cedula_med  Int    @id
   nombre   String @db.VarChar(15)
   apellido String @db.VarChar(15)
-
   especialidad Especiliad
 
   recetas Receta[]
@@ -35,15 +29,28 @@ model Medico {
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
   deletedAt DateTime? @db.Timestamptz(3)
 
-  @@index([cedula])
+  @@index([cedula_med])
   @@map("Medicos")
 }
+
+enum Especiliad {
+  CLINICO
+  CIRUJANO
+  PEDIATRA
+  PSQUIATRA
+}
+
+
 
 model Paciente {
   nro_legajo Int    @id
   nombre     String @db.VarChar(15)
   apellido   String @db.VarChar(15)
-  dni        Int
+  dni        Int @unique
+  fechaNac DateTime
+  telefono String? @db.VarChar(15)
+  obraSocial String @db.VarChar(50)
+  direccion String? @db.VarChar(50)
 
   recetas Receta[]
 
@@ -55,11 +62,13 @@ model Paciente {
   @@map("Pacientes")
 }
 
+
+
 model Farmaceutico {
-  cedula       Int    @id
+  cedula_farma       Int    @id
   nombre       String @db.VarChar(15)
   apellido     String @db.VarChar(15)
-  clave_acceso Int
+  clave_acceso Int @unique
 
   computadoras ComputadoraGeneral[]
 
@@ -71,21 +80,7 @@ model Farmaceutico {
   @@map("Farmaceuticos")
 }
 
-model Receta {
-  nro_receta        String               @id
-  medicoCedula      Int
-  pacienteNroLegajo Int
-  medico            Medico               @relation(fields: [medicoCedula], references: [cedula])
-  paciente          Paciente             @relation(fields: [pacienteNroLegajo], references: [nro_legajo])
-  productos         RecetaProducto[]
-  computadoras      ComputadoraGeneral[]
 
-  createdAt DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime? @updatedAt @db.Timestamptz(3)
-  deletedAt DateTime? @db.Timestamptz(3)
-  @@index([nro_receta])
-  @@map("Recetas")
-}
 
 model ComputadoraGeneral {
   id_computadora                 String   @id
@@ -94,7 +89,7 @@ model ComputadoraGeneral {
   farmaceuticoCedula Int
   recetaNroReceta    String
 
-  farmaceutico Farmaceutico @relation(fields: [farmaceuticoCedula], references: [cedula])
+  farmaceutico Farmaceutico @relation(fields: [farmaceuticoCedula], references: [cedula_farma])
   receta       Receta       @relation(fields: [recetaNroReceta], references: [nro_receta])
   
 
@@ -106,28 +101,17 @@ model ComputadoraGeneral {
   @@map("ComputadoraGeneral")
 }
 
-model CategoriaProducto {
-  id_cat        Int    @id
-  categoriaName String
 
-  productos Producto[]
 
-  createdAt DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime? @updatedAt @db.Timestamptz(3)
-  deletedAt DateTime? @db.Timestamptz(3)
 
-  @@index([id_cat])
-  @@map("CategoriasProductos")
-}
 
 model Producto {
-  id           String            @id
+  id           Int            @id
   nombre       String
   descripcion  String
-  presentation String
   stock        Int
-  categoriaId  Int
-  categoria    CategoriaProducto @relation(fields: [categoriaId], references: [id_cat])
+  categProd  categoriaProducto
+
   recetas      RecetaProducto[]
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
@@ -138,6 +122,34 @@ model Producto {
   @@map("Productos")
 }
 
+enum categoriaProducto {
+  INYECTABLE
+  JARABE
+  PILDORA
+  SUPOSITORIO
+  OVULO
+  CREMA
+  GOTA
+  SPRAYS
+  SUMINISTRO
+}
+
+model Receta {
+  nro_receta        String               @id
+  medicoCedula      Int
+  pacienteNroLegajo Int
+  medico            medico               @relation(fields: [medicoCedula], references: [cedula_med])
+  paciente          Paciente             @relation(fields: [pacienteNroLegajo], references: [nro_legajo])
+  productos         RecetaProducto[]
+  computadoras      ComputadoraGeneral[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+  @@index([nro_receta])
+  @@map("Recetas")
+}
+
 model RecetaProducto {
   id_receta_prod    Int      @id
   fecha_emision     DateTime
@@ -145,7 +157,7 @@ model RecetaProducto {
   dosificacion      String
   cantidad          Int
   recetaNroReceta   String
-  productoId        String
+  productoId        Int
 
   receta   Receta   @relation(fields: [recetaNroReceta], references: [nro_receta])
   producto Producto @relation(fields: [productoId], references: [id])
@@ -157,6 +169,8 @@ model RecetaProducto {
   @@index([id_receta_prod])
   @@map("RecetaProductos")
 }
+
+
 
 model User {
   id       String @id @default(uuid()) @db.Uuid
