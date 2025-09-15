@@ -1,8 +1,7 @@
 generator client {
-  provider        = "prisma-client"
-  output          = "../generated/prisma"
-  previewFeatures = ["driverAdapters", "queryCompiler"]
-  runtime         = "bun"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  runtime  = "bun"
 }
 
 datasource db {
@@ -81,9 +80,8 @@ model Farmaceutico {
 }
 
 
-
 model ComputadoraGeneral {
-  id_computadora                 String   @id
+  id_computadora     String   @id
   clave_ingresada    String
   fecha_expedicion   DateTime
   farmaceuticoCedula Int
@@ -91,11 +89,11 @@ model ComputadoraGeneral {
 
   farmaceutico Farmaceutico @relation(fields: [farmaceuticoCedula], references: [cedula_farma])
   receta       Receta       @relation(fields: [recetaNroReceta], references: [nro_receta])
-  
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
   deletedAt DateTime? @db.Timestamptz(3)
+
   @@index([id_computadora])
   @@index([clave_ingresada])
   @@map("ComputadoraGeneral")
