@@ -9,7 +9,20 @@ export class ProductoService {
   constructor(private prisma: PrismaService) {}
   
   async create(data: CreateProductoDto) {
-    return this.prisma.producto.create({ data });
+    try {
+      const existingProducto = await this.prisma.producto.findFirst({
+        where: { nombre: data.nombre, deletedAt: null },
+      });
+
+      if (existingProducto) {
+        throw new Error(`El producto con nombre "${data.nombre}" ya existe.`);
+      }
+
+
+    return await this.prisma.producto.create({ data });
+    } catch (error) {
+      throw new Error(`Error al crear el producto: ${error.message}`);
+    }
   }
 
 

@@ -1,8 +1,8 @@
 import { IsInt, IsString, IsIn, isString } from 'class-validator';
+import { CategoriaProducto } from 'generated/prisma/enums';
 
 export class CreateProductoDto {
-    @IsInt()
-    id: number;
+
 
     @IsString()
     nombre: string;
@@ -13,6 +13,6 @@ export class CreateProductoDto {
     @IsInt()
     stock: number;
 
-    categProd: 'INYECTABLE' | 'JARABE' | 'PILDORA' | 'SUPOSITORIO' | 'OVULO' | 'CREMA' | 'GOTA' | 'SPRAYS' | 'SUMINISTRO';
+    categProd: CategoriaProducto
 
 }

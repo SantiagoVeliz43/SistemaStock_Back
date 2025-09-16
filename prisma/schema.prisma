@@ -14,12 +14,10 @@ enum Role {
   ADMIN
 }
 
-
-
-model medico{
-  cedula_med  Int    @id
-  nombre   String @db.VarChar(15)
-  apellido String @db.VarChar(15)
+model Medico {
+  cedula_med   Int        @id
+  nombre       String     @db.VarChar(15)
+  apellido     String     @db.VarChar(15)
   especialidad Especiliad
 
   recetas Receta[]
@@ -39,17 +37,15 @@ enum Especiliad {
   PSQUIATRA
 }
 
-
-
 model Paciente {
-  nro_legajo Int    @id
-  nombre     String @db.VarChar(15)
-  apellido   String @db.VarChar(15)
-  dni        Int @unique
-  fechaNac DateTime
-  telefono String? @db.VarChar(15)
-  obraSocial String @db.VarChar(50)
-  direccion String? @db.VarChar(50)
+  nro_legajo Int      @id
+  nombre     String   @db.VarChar(15)
+  apellido   String   @db.VarChar(15)
+  dni        Int      @unique
+  fechaNac   DateTime
+  telefono   String?  @db.VarChar(15)
+  obraSocial String   @db.VarChar(50)
+  direccion  String?  @db.VarChar(50)
 
   recetas Receta[]
 
@@ -61,13 +57,11 @@ model Paciente {
   @@map("Pacientes")
 }
 
-
-
 model Farmaceutico {
-  cedula_farma       Int    @id
+  cedula_farma Int    @id
   nombre       String @db.VarChar(15)
   apellido     String @db.VarChar(15)
-  clave_acceso Int @unique
+  clave_acceso Int    @unique
 
   computadoras ComputadoraGeneral[]
 
@@ -78,7 +72,6 @@ model Farmaceutico {
   @@index([clave_acceso])
   @@map("Farmaceuticos")
 }
-
 
 model ComputadoraGeneral {
   id_computadora     String   @id
@@ -99,18 +92,14 @@ model ComputadoraGeneral {
   @@map("ComputadoraGeneral")
 }
 
-
-
-
-
 model Producto {
-  id           Int            @id
-  nombre       String
-  descripcion  String
-  stock        Int
-  categProd  categoriaProducto
+  id          Int               @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  stock       Int
+  categProd   CategoriaProducto
 
-  recetas      RecetaProducto[]
+  recetas RecetaProducto[]
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
@@ -120,7 +109,7 @@ model Producto {
   @@map("Productos")
 }
 
-enum categoriaProducto {
+enum CategoriaProducto {
   INYECTABLE
   JARABE
   PILDORA
@@ -129,14 +118,13 @@ enum categoriaProducto {
   CREMA
   GOTA
   SPRAYS
-  SUMINISTRO
 }
 
 model Receta {
   nro_receta        String               @id
   medicoCedula      Int
   pacienteNroLegajo Int
-  medico            medico               @relation(fields: [medicoCedula], references: [cedula_med])
+  medico            Medico               @relation(fields: [medicoCedula], references: [cedula_med])
   paciente          Paciente             @relation(fields: [pacienteNroLegajo], references: [nro_legajo])
   productos         RecetaProducto[]
   computadoras      ComputadoraGeneral[]
@@ -144,12 +132,13 @@ model Receta {
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
   deletedAt DateTime? @db.Timestamptz(3)
+
   @@index([nro_receta])
   @@map("Recetas")
 }
 
 model RecetaProducto {
-  id_receta_prod    Int      @id
+  id_receta_prod    Int      @id @default(autoincrement())
   fecha_emision     DateTime
   fecha_vencimiento DateTime
   dosificacion      String
@@ -168,8 +157,6 @@ model RecetaProducto {
   @@map("RecetaProductos")
 }
 
-
-
 model User {
   id       String @id @default(uuid()) @db.Uuid
   email    String @unique
@@ -182,5 +169,5 @@ model User {
   deletedAt DateTime? @db.Timestamptz(3)
 
   @@index([id, email])
-  @@map("users")
+  @@map("Users")
 }
