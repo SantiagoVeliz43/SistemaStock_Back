@@ -5,14 +5,28 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
 @Injectable()
 export class PacienteService {
+
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreatePacienteDto) {
-      return this.prisma.paciente.create({ data });
+async create(data: CreatePacienteDto) {
+    try {
+      const existingPaciente = await this.prisma.paciente.findFirst({
+        where: { nombre: data.nombre, deletedAt: null },
+      });
+
+      if (existingPaciente) {
+        throw new Error(`El paciente con nombre "${data.nombre}" ya existe.`);
+      }
+
+
+    return await this.prisma.paciente.create({ data });
+    } catch (error) {
+      throw new Error(`Error al crear al paciente: ${error.message}`);
     }
+  }
 
   async findAll() {
-    return this.prisma.paciente.findMany({
+    return await this.prisma.paciente.findMany({
       where: { deletedAt: null },
     });
   }
@@ -38,7 +52,7 @@ export class PacienteService {
         throw new NotFoundException(`No se puede actualizar: paciente con legajo ${nro_legajo} no existe o está eliminado`);
       }
   
-      return this.prisma.paciente.update({
+      return await this.prisma.paciente.update({
         where: { nro_legajo },
         data,
       });
@@ -53,7 +67,7 @@ export class PacienteService {
       throw new NotFoundException(`No se puede eliminar: paciente con legajo ${nro_legajo} no existe o ya está eliminado`);
     }
 
-    return this.prisma.paciente.update({
+    return await this.prisma.paciente.update({
       where: { nro_legajo },
       data: {
         deletedAt: new Date(),

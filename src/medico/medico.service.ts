@@ -5,11 +5,25 @@ import { UpdateMedicoDto } from './dto/update-medico.dto';
 
 @Injectable()
 export class MedicoService {
+
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateMedicoDto) {
-    return this.prisma.medico.create({ data });
-  }
+   async create(data: CreateMedicoDto) {
+      try {
+        const existingmedico = await this.prisma.medico.findFirst({
+          where: { nombre: data.nombre, deletedAt: null },
+        });
+  
+        if (existingmedico) {
+          throw new Error(`El medico con nombre "${data.nombre}" ya existe.`);
+        }
+  
+  
+      return await this.prisma.medico.create({ data });
+      } catch (error) {
+        throw new Error(`Error al crear perfil de medico: ${error.message}`);
+      }
+    }
 
   async findAll() {
     return this.prisma.medico.findMany({
@@ -17,18 +31,21 @@ export class MedicoService {
     });
   }
 
-  async findOne(cedula_med: number) {
-    const medico = await this.prisma.medico.findFirst({
-      where: { cedula_med, deletedAt: null },
-    });
 
-    if (!medico) {
-      throw new NotFoundException(`Médico con cédula ${cedula_med} no encontrado`);
+    async findOne(cedula_med: number) {
+      const producto = await this.prisma.medico.findFirst({
+        where: { cedula_med, deletedAt: null },
+      });
+  
+      if (!producto) {
+        throw new NotFoundException(`Médico con cédula ${cedula_med} no encontrado`);
+      }
+  
+      return producto;
     }
 
-    return medico;
-  }
 
+    
   async update(cedula_med: number, data: UpdateMedicoDto) {
     const exists = await this.prisma.medico.findFirst({
       where: { cedula_med, deletedAt: null },

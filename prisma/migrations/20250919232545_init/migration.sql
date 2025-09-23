@@ -8,6 +8,20 @@ CREATE TYPE "public"."Especiliad" AS ENUM ('CLINICO', 'CIRUJANO', 'PEDIATRA', 'P
 CREATE TYPE "public"."CategoriaProducto" AS ENUM ('INYECTABLE', 'JARABE', 'PILDORA', 'SUPOSITORIO', 'OVULO', 'CREMA', 'GOTA', 'SPRAYS');
 
 -- CreateTable
+CREATE TABLE "public"."Users" (
+    "id" UUID NOT NULL,
+    "email" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "public"."Role" NOT NULL DEFAULT 'USER',
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMPTZ(3),
+    "deletedAt" TIMESTAMPTZ(3),
+
+    CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "public"."Medicos" (
     "cedula_med" INTEGER NOT NULL,
     "nombre" VARCHAR(15) NOT NULL,
@@ -51,20 +65,6 @@ CREATE TABLE "public"."Farmaceuticos" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."ComputadoraGeneral" (
-    "id_computadora" TEXT NOT NULL,
-    "clave_ingresada" TEXT NOT NULL,
-    "fecha_expedicion" TIMESTAMP(3) NOT NULL,
-    "farmaceuticoCedula" INTEGER NOT NULL,
-    "recetaNroReceta" TEXT NOT NULL,
-    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMPTZ(3),
-    "deletedAt" TIMESTAMPTZ(3),
-
-    CONSTRAINT "ComputadoraGeneral_pkey" PRIMARY KEY ("id_computadora")
-);
-
--- CreateTable
 CREATE TABLE "public"."Productos" (
     "id" SERIAL NOT NULL,
     "nombre" TEXT NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE "public"."Productos" (
 
 -- CreateTable
 CREATE TABLE "public"."Recetas" (
-    "nro_receta" TEXT NOT NULL,
+    "nro_receta" SERIAL NOT NULL,
     "medicoCedula" INTEGER NOT NULL,
     "pacienteNroLegajo" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -91,34 +91,39 @@ CREATE TABLE "public"."Recetas" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."RecetaProductos" (
-    "id_receta_prod" SERIAL NOT NULL,
+CREATE TABLE "public"."Detalles de Recetas" (
+    "id_detallesReceta" SERIAL NOT NULL,
+    "indicaciones" TEXT NOT NULL,
     "fecha_emision" TIMESTAMP(3) NOT NULL,
     "fecha_vencimiento" TIMESTAMP(3) NOT NULL,
-    "dosificacion" TEXT NOT NULL,
-    "cantidad" INTEGER NOT NULL,
-    "recetaNroReceta" TEXT NOT NULL,
+    "recetaNroReceta" INTEGER NOT NULL,
     "productoId" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3),
     "deletedAt" TIMESTAMPTZ(3),
 
-    CONSTRAINT "RecetaProductos_pkey" PRIMARY KEY ("id_receta_prod")
+    CONSTRAINT "Detalles de Recetas_pkey" PRIMARY KEY ("id_detallesReceta")
 );
 
 -- CreateTable
-CREATE TABLE "public"."Users" (
-    "id" UUID NOT NULL,
-    "email" TEXT NOT NULL,
-    "fullName" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "role" "public"."Role" NOT NULL DEFAULT 'USER',
+CREATE TABLE "public"."Computadora General" (
+    "id_computadora" TEXT NOT NULL,
+    "clave_ingresada" TEXT NOT NULL,
+    "fecha_expedicion" TIMESTAMP(3) NOT NULL,
+    "farmaceuticoCedula" INTEGER NOT NULL,
+    "recetaNroReceta" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3),
     "deletedAt" TIMESTAMPTZ(3),
 
-    CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Computadora General_pkey" PRIMARY KEY ("id_computadora")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Users_email_key" ON "public"."Users"("email");
+
+-- CreateIndex
+CREATE INDEX "Users_id_email_idx" ON "public"."Users"("id", "email");
 
 -- CreateIndex
 CREATE INDEX "Medicos_cedula_med_idx" ON "public"."Medicos"("cedula_med");
@@ -136,31 +141,19 @@ CREATE UNIQUE INDEX "Farmaceuticos_clave_acceso_key" ON "public"."Farmaceuticos"
 CREATE INDEX "Farmaceuticos_clave_acceso_idx" ON "public"."Farmaceuticos"("clave_acceso");
 
 -- CreateIndex
-CREATE INDEX "ComputadoraGeneral_id_computadora_idx" ON "public"."ComputadoraGeneral"("id_computadora");
-
--- CreateIndex
-CREATE INDEX "ComputadoraGeneral_clave_ingresada_idx" ON "public"."ComputadoraGeneral"("clave_ingresada");
-
--- CreateIndex
 CREATE INDEX "Productos_id_idx" ON "public"."Productos"("id");
 
 -- CreateIndex
 CREATE INDEX "Recetas_nro_receta_idx" ON "public"."Recetas"("nro_receta");
 
 -- CreateIndex
-CREATE INDEX "RecetaProductos_id_receta_prod_idx" ON "public"."RecetaProductos"("id_receta_prod");
+CREATE INDEX "Detalles de Recetas_id_detallesReceta_idx" ON "public"."Detalles de Recetas"("id_detallesReceta");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_email_key" ON "public"."Users"("email");
+CREATE INDEX "Computadora General_id_computadora_idx" ON "public"."Computadora General"("id_computadora");
 
 -- CreateIndex
-CREATE INDEX "Users_id_email_idx" ON "public"."Users"("id", "email");
-
--- AddForeignKey
-ALTER TABLE "public"."ComputadoraGeneral" ADD CONSTRAINT "ComputadoraGeneral_farmaceuticoCedula_fkey" FOREIGN KEY ("farmaceuticoCedula") REFERENCES "public"."Farmaceuticos"("cedula_farma") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "public"."ComputadoraGeneral" ADD CONSTRAINT "ComputadoraGeneral_recetaNroReceta_fkey" FOREIGN KEY ("recetaNroReceta") REFERENCES "public"."Recetas"("nro_receta") ON DELETE RESTRICT ON UPDATE CASCADE;
+CREATE INDEX "Computadora General_clave_ingresada_idx" ON "public"."Computadora General"("clave_ingresada");
 
 -- AddForeignKey
 ALTER TABLE "public"."Recetas" ADD CONSTRAINT "Recetas_medicoCedula_fkey" FOREIGN KEY ("medicoCedula") REFERENCES "public"."Medicos"("cedula_med") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -169,7 +162,13 @@ ALTER TABLE "public"."Recetas" ADD CONSTRAINT "Recetas_medicoCedula_fkey" FOREIG
 ALTER TABLE "public"."Recetas" ADD CONSTRAINT "Recetas_pacienteNroLegajo_fkey" FOREIGN KEY ("pacienteNroLegajo") REFERENCES "public"."Pacientes"("nro_legajo") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."RecetaProductos" ADD CONSTRAINT "RecetaProductos_recetaNroReceta_fkey" FOREIGN KEY ("recetaNroReceta") REFERENCES "public"."Recetas"("nro_receta") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Detalles de Recetas" ADD CONSTRAINT "Detalles de Recetas_recetaNroReceta_fkey" FOREIGN KEY ("recetaNroReceta") REFERENCES "public"."Recetas"("nro_receta") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."RecetaProductos" ADD CONSTRAINT "RecetaProductos_productoId_fkey" FOREIGN KEY ("productoId") REFERENCES "public"."Productos"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Detalles de Recetas" ADD CONSTRAINT "Detalles de Recetas_productoId_fkey" FOREIGN KEY ("productoId") REFERENCES "public"."Productos"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Computadora General" ADD CONSTRAINT "Computadora General_farmaceuticoCedula_fkey" FOREIGN KEY ("farmaceuticoCedula") REFERENCES "public"."Farmaceuticos"("cedula_farma") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Computadora General" ADD CONSTRAINT "Computadora General_recetaNroReceta_fkey" FOREIGN KEY ("recetaNroReceta") REFERENCES "public"."Recetas"("nro_receta") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -11,7 +11,9 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { GetUser } from './decorators/get-user.decorator';
 import { Auth } from './decorators/auth.decorator';
-import { Role, User as UserModel } from '@prisma/client';
+import { Role } from 'generated/prisma/enums';
+import { UserModel } from 'generated/prisma/models';
+
 
 @Controller('auth')
 export class AuthController {

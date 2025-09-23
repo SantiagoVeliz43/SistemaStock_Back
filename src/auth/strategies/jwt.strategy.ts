@@ -8,7 +8,8 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { User, User as UserModel } from '@prisma/client';
+import { User } from 'generated/prisma/client';
+
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

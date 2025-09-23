@@ -14,6 +14,21 @@ enum Role {
   ADMIN
 }
 
+model User {
+  id       String @id @default(uuid()) @db.Uuid
+  email    String @unique
+  fullName String
+  password String
+  role     Role   @default(USER)
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @db.Timestamptz(3)
+  deletedAt DateTime? @db.Timestamptz(3)
+
+  @@index([id, email])
+  @@map("Users")
+}
+
 model Medico {
   cedula_med   Int        @id
   nombre       String     @db.VarChar(15)
@@ -80,7 +95,7 @@ model Producto {
   stock       Int
   categProd   CategoriaProducto
 
-  recetas RecetaProducto[]
+  detalles_recetas DetallesReceta[]
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
@@ -102,13 +117,13 @@ enum CategoriaProducto {
 }
 
 model Receta {
-  nro_receta        String               @id
+  nro_receta        Int                  @id @default(autoincrement())
   medicoCedula      Int
   pacienteNroLegajo Int
   medico            Medico               @relation(fields: [medicoCedula], references: [cedula_med])
   paciente          Paciente             @relation(fields: [pacienteNroLegajo], references: [nro_legajo])
-  productos         RecetaProducto[]
-  computadoras      ComputadoraGeneral[]
+  detalles_recetas  DetallesReceta[]
+  computadora       ComputadoraGeneral[]
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
@@ -118,13 +133,12 @@ model Receta {
   @@map("Recetas")
 }
 
-model RecetaProducto {
-  id_receta_prod    Int      @id @default(autoincrement())
+model DetallesReceta {
+  id_detallesReceta Int      @id @default(autoincrement())
+  indicaciones      String
   fecha_emision     DateTime
   fecha_vencimiento DateTime
-  dosificacion      String
-  cantidad          Int
-  recetaNroReceta   String
+  recetaNroReceta   Int
   productoId        Int
 
   receta   Receta   @relation(fields: [recetaNroReceta], references: [nro_receta])
@@ -134,21 +148,25 @@ model RecetaProducto {
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
   deletedAt DateTime? @db.Timestamptz(3)
 
-  @@index([id_receta_prod])
-  @@map("RecetaProductos")
+  @@index([id_detallesReceta])
+  @@map("Detalles de Recetas")
 }
 
-model User {
-  id       String @id @default(uuid()) @db.Uuid
-  email    String @unique
-  fullName String
-  password String
-  role     Role   @default(USER)
+model ComputadoraGeneral {
+  id_computadora     String   @id
+  clave_ingresada    String
+  fecha_expen        DateTime
+  farmaceuticoCedula Int
+  recetaNroReceta    Int
+
+  farmaceutico Farmaceutico @relation(fields: [farmaceuticoCedula], references: [cedula_farma])
+  receta       Receta       @relation(fields: [recetaNroReceta], references: [nro_receta])
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
   deletedAt DateTime? @db.Timestamptz(3)
 
-  @@index([id, email])
-  @@map("Users")
+  @@index([id_computadora])
+  @@index([clave_ingresada])
+  @@map("Computadora General")
 }

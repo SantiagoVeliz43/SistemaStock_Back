@@ -3,8 +3,10 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { MedicoModule } from './medico/medico.module';
 import { ProductoModule } from './producto/producto.module';
+import { RecetaModule } from './receta/receta.module';
+import { DetallesRecetasModule } from './detalles-recetas/detalles-recetas.module';
 
 @Module({
-  imports: [AuthModule, UserModule, MedicoModule, ProductoModule],
+  imports: [AuthModule, UserModule, MedicoModule, ProductoModule, RecetaModule, DetallesRecetasModule],
 })
 export class AppModule {}

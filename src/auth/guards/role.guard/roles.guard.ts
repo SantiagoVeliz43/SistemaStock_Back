@@ -10,7 +10,9 @@ import { Observable } from 'rxjs';
 import { ROLES_KEY } from 'src/auth/decorators/role-protected.decorator';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
-import { Role, User } from '@prisma/client';
+import { Role } from 'generated/prisma/enums';
+import { User } from 'generated/prisma/client';
+
 
 @Injectable()
 export class RolesGuard implements CanActivate {

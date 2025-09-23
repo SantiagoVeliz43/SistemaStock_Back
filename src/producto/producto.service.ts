@@ -27,7 +27,7 @@ export class ProductoService {
 
 
   async findAll() {
-    return this.prisma.producto.findMany({
+    return await this.prisma.producto.findMany({
         where: { deletedAt: null },
       });
     }
@@ -56,7 +56,7 @@ export class ProductoService {
         throw new NotFoundException(`No se puede actualizar: Producto con ID ${id} no existe o está eliminado`);
       }
   
-      return this.prisma.producto.update({
+      return await this.prisma.producto.update({
         where: { id },
         data,
       });
@@ -72,7 +72,7 @@ export class ProductoService {
         throw new NotFoundException(`No se puede eliminar: Producto con ID ${id} no existe o ya está eliminado`);
       }
   
-      return this.prisma.producto.update({
+      return await this.prisma.producto.update({
         where: { id },
         data: {
           deletedAt: new Date(),

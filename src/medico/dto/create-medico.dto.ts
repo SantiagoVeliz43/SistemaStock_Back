@@ -1,4 +1,5 @@
 import { IsInt, IsString, IsIn } from 'class-validator';
+import { Especiliad } from 'generated/prisma/enums';
 
 export class CreateMedicoDto {
   @IsInt()
@@ -10,5 +11,5 @@ export class CreateMedicoDto {
   @IsString()
   apellido: string;
   
-  especialidad: 'CLINICO' | 'CIRUJANO' | 'PEDIATRA' | 'PSQUIATRA';
+  especialidad: Especiliad;
 }
