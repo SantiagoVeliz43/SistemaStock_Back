@@ -30,7 +30,7 @@ export class AuthController {
   }
 
   @Get('private')
-  @Auth(Role.USER, Role.ADMIN)
+  @Auth(Role.FARMACEUTICO, Role.ADMIN)
   testingPrivateRoute2(@GetUser() user: Partial<UserModel>) {
     return { user };
   }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,7 +6,7 @@ import { hashSync } from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {} 
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(order: 'asc' | 'desc' = 'asc') {
     try {
@@ -27,7 +27,7 @@ export class UserService {
     } catch (error) {
       this.handleError(error);
     }
-  }  
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -64,7 +64,7 @@ export class UserService {
 
   async findOne(id: string) {
     try {
-      return await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findFirst({
         where: {
           id: id,
           deletedAt: null,
@@ -76,6 +76,13 @@ export class UserService {
           role: true,
         }
       });
+
+      if (!user) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      return user;
+
     } catch (error) {
       this.handleError(error);
     }
@@ -114,14 +121,11 @@ export class UserService {
   }
 
   handleError(error: any) {
-    console.log(error);
+    if (error instanceof ConflictException) throw new ConflictException(error.message);
+    if (error instanceof NotFoundException) throw new NotFoundException(error.message);
 
-    if (error instanceof ConflictException) {
-      throw new ConflictException(error.message);
-    } else {
-      throw new InternalServerErrorException('Error creating user');
-    }
-
+    Logger.error(error)
+    throw new InternalServerErrorException('Error interno del servidor');
   }
 
   async remove(id: string) {
