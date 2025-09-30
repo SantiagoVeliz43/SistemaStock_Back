@@ -10,7 +10,7 @@ datasource db {
 }
 
 enum Role {
-  FARMACEUTICO
+  USER
   ADMIN
 }
 
@@ -19,7 +19,7 @@ model User {
   email    String @unique
   fullName String
   password String
-  role     Role   @default(FARMACEUTICO)
+  role     Role   @default(USER)
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)

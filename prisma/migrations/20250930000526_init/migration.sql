@@ -107,9 +107,9 @@ CREATE TABLE "public"."Detalles de Recetas" (
 
 -- CreateTable
 CREATE TABLE "public"."Computadora General" (
-    "id_computadora" TEXT NOT NULL,
+    "id_computadora" INTEGER NOT NULL,
     "clave_ingresada" TEXT NOT NULL,
-    "fecha_expedicion" TIMESTAMP(3) NOT NULL,
+    "fecha_expen" TIMESTAMP(3) NOT NULL,
     "farmaceuticoCedula" INTEGER NOT NULL,
     "recetaNroReceta" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
