@@ -11,11 +11,11 @@ export class MedicoService {
    async create(data: CreateMedicoDto) {
       try {
         const existingmedico = await this.prisma.medico.findFirst({
-          where: { nombre: data.nombre, deletedAt: null },
+          where: { cedula_med: data.cedula_med, deletedAt: null },
         });
   
         if (existingmedico) {
-          throw new Error(`El medico con nombre "${data.nombre}" ya existe.`);
+          throw new Error(`El medico con cedula "${data.cedula_med}" ya existe.`);
         }
   
   

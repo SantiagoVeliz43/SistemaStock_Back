@@ -4,8 +4,8 @@ import { FarmaceuticoController } from './farmaceutico.controller';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
-  imports: [PrismaService],
+  imports: [],
   controllers: [FarmaceuticoController],
-  providers: [FarmaceuticoService],
+  providers: [FarmaceuticoService, PrismaService],
 })
 export class FarmaceuticoModule {}

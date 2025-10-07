@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Logger, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
@@ -15,7 +15,7 @@ export class ProductoService {
       });
 
       if (existingProducto) {
-        throw new Error(`El producto con nombre "${data.nombre}" ya existe.`);
+        throw new ConflictException(`El producto con nombre "${data.nombre}" ya existe.`);
       }
 
 

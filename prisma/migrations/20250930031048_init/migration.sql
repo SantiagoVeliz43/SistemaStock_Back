@@ -2,7 +2,7 @@
 CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "public"."Especiliad" AS ENUM ('CLINICO', 'CIRUJANO', 'PEDIATRA', 'PSQUIATRA');
+CREATE TYPE "public"."Especialidad" AS ENUM ('CLINICO', 'CIRUJANO', 'PEDIATRA', 'PSQUIATRA', 'GINECOLOGO');
 
 -- CreateEnum
 CREATE TYPE "public"."CategoriaProducto" AS ENUM ('INYECTABLE', 'JARABE', 'PILDORA', 'SUPOSITORIO', 'OVULO', 'CREMA', 'GOTA', 'SPRAYS');
@@ -26,7 +26,7 @@ CREATE TABLE "public"."Medicos" (
     "cedula_med" INTEGER NOT NULL,
     "nombre" VARCHAR(15) NOT NULL,
     "apellido" VARCHAR(15) NOT NULL,
-    "especialidad" "public"."Especiliad" NOT NULL,
+    "especialidad" "public"."Especialidad" NOT NULL,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3),
     "deletedAt" TIMESTAMPTZ(3),
