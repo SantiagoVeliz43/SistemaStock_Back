@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { PacienteService } from './paciente.service';
-import { PacienteController } from './paciente.controller';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Module } from "@nestjs/common";
+import { PacienteService } from "./paciente.service";
+import { PacienteController } from "./paciente.controller";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Module({
   controllers: [PacienteController],

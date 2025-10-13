@@ -1,15 +1,14 @@
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtPayload } from '../interfaces/jwt-payload.interface';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { JwtPayload } from "../interfaces/jwt-payload.interface";
+import { PrismaService } from "../../prisma/prisma.service";
 import {
   Injectable,
   InternalServerErrorException,
   Logger,
   UnauthorizedException,
-} from '@nestjs/common';
-import { User } from 'generated/prisma/client';
-
+} from "@nestjs/common";
+import { User } from "generated/prisma/client";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const { id } = payload;
 
       if (!id) {
-        throw new UnauthorizedException('Credenciales inválidas');
+        throw new UnauthorizedException("Credenciales inválidas");
       }
 
       const user = (await this.prismaService.user.findUnique({
@@ -43,7 +42,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       })) as Partial<User>;
 
       if (!user) {
-        throw new UnauthorizedException('Token inválido');
+        throw new UnauthorizedException("Token inválido");
       }
 
       return user;
@@ -51,10 +50,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       Logger.error(error);
 
       if (error?.status === 401) {
-        throw new UnauthorizedException('No autorizado');
+        throw new UnauthorizedException("No autorizado");
       }
 
-      throw new InternalServerErrorException('Erro interno');
+      throw new InternalServerErrorException("Erro interno");
     }
   }
 }

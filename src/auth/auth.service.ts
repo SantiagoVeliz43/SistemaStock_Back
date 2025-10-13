@@ -5,13 +5,13 @@ import {
   InternalServerErrorException,
   Logger,
   UnauthorizedException,
-} from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { JwtService } from '@nestjs/jwt';
-import { LoginDto } from './dto/login.dto';
-import { User } from 'generated/prisma/client';
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import * as bcrypt from "bcrypt";
+import { JwtPayload } from "./interfaces/jwt-payload.interface";
+import { JwtService } from "@nestjs/jwt";
+import { LoginDto } from "./dto/login.dto";
+import { User } from "generated/prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -39,11 +39,11 @@ export class AuthService {
       })) as Partial<User>;
 
       if (!user) {
-        throw new UnauthorizedException('Credenciales inválidas');
+        throw new UnauthorizedException("Credenciales inválidas");
       }
 
       if (!bcrypt.compareSync(password, user.password!)) {
-        throw new UnauthorizedException('Credenciales inválidas');
+        throw new UnauthorizedException("Credenciales inválidas");
       }
 
       delete user.password;
@@ -104,14 +104,14 @@ export class AuthService {
 
   private handleDbExceptions(error: any): never {
     if (error?.status === HttpStatus.UNAUTHORIZED) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException("Credenciales inválidas");
     }
 
     if (error?.status === HttpStatus.BAD_REQUEST) {
-      throw new BadRequestException('Error en la petición');
+      throw new BadRequestException("Error en la petición");
     }
 
     Logger.error(error);
-    throw new InternalServerErrorException('Error inesperado');
+    throw new InternalServerErrorException("Error inesperado");
   }
 }

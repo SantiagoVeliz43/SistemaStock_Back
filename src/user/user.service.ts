@@ -1,14 +1,20 @@
-import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { hashSync } from 'bcrypt';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { hashSync } from "bcrypt";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(order: 'asc' | 'desc' = 'asc') {
+  async findAll(order: "asc" | "desc" = "asc") {
     try {
       return await this.prisma.user.findMany({
         where: {
@@ -39,7 +45,7 @@ export class UserService {
       });
 
       if (findUser) {
-        throw new ConflictException('El usuario ya existe');
+        throw new ConflictException("El usuario ya existe");
       }
 
       return await this.prisma.user.create({
@@ -52,15 +58,14 @@ export class UserService {
           fullName: true,
           email: true,
           role: true,
-        }
-
+        },
       });
     } catch (error) {
       this.handleError(error);
     }
   }
-  //verifico si ese email  existe , delete null, que no haya duplicados 
-  //actualizar 
+  //verifico si ese email  existe , delete null, que no haya duplicados
+  //actualizar
 
   async findOne(id: string) {
     try {
@@ -74,15 +79,14 @@ export class UserService {
           fullName: true,
           email: true,
           role: true,
-        }
+        },
       });
 
       if (!user) {
-        throw new NotFoundException('Usuario no encontrado');
+        throw new NotFoundException("Usuario no encontrado");
       }
 
       return user;
-
     } catch (error) {
       this.handleError(error);
     }
@@ -93,7 +97,7 @@ export class UserService {
       const findUser = await this.findOne(id);
 
       if (!findUser) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
 
       if (updateUserDto.password) {
@@ -112,20 +116,21 @@ export class UserService {
           fullName: true,
           email: true,
           role: true,
-        }
+        },
       });
     } catch (error) {
       this.handleError(error);
-
     }
   }
 
   handleError(error: any) {
-    if (error instanceof ConflictException) throw new ConflictException(error.message);
-    if (error instanceof NotFoundException) throw new NotFoundException(error.message);
+    if (error instanceof ConflictException)
+      throw new ConflictException(error.message);
+    if (error instanceof NotFoundException)
+      throw new NotFoundException(error.message);
 
-    Logger.error(error)
-    throw new InternalServerErrorException('Error interno del servidor');
+    Logger.error(error);
+    throw new InternalServerErrorException("Error interno del servidor");
   }
 
   async remove(id: string) {
@@ -133,7 +138,7 @@ export class UserService {
       const findUser = this.findOne(id);
 
       if (!findUser) {
-        throw new Error('Usuario no encontrado');
+        throw new Error("Usuario no encontrado");
       }
       return await this.prisma.user.update({
         where: {
@@ -142,8 +147,8 @@ export class UserService {
         },
         data: {
           deletedAt: new Date(),
-        }
-      })
+        },
+      });
     } catch (error) {
       this.handleError(error);
     }
