@@ -54,7 +54,7 @@ enum Especialidad {
 }
 
 model Paciente {
-  nro_legajo Int      @id
+  nro_legajo Int      @id 
   nombre     String   @db.VarChar(15)
   apellido   String   @db.VarChar(15)
   dni        Int      @unique
